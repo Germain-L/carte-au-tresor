@@ -1,6 +1,7 @@
 package parser_test
 
 import (
+	"carte_au_tresor/internal/domain/models"
 	"carte_au_tresor/internal/parser"
 	"os"
 	"strings"
@@ -171,17 +172,17 @@ func TestParseAdventurer(t *testing.T) {
 		expectedName      string
 		expectedRow       int
 		expectedCol       int
-		expectedDirection string
+		expectedDirection models.Direction
 		expectedActions   string
 		expectError       bool
 	}{
-		{"A - Lara - 1 - 1 - S - AADADAGGA", "Lara", 1, 1, "S", "AADADAGGA", false},
-		{"A - Indiana - 0 - 0 - N - ADAGA", "Indiana", 0, 0, "N", "ADAGA", false},
-		{"A - Test - 5 - 3 - E - A", "Test", 3, 5, "E", "A", false},
-		{"A - Lara", "", 0, 0, "", "", true},                     // Missing fields
-		{"A - abc - def - 1 - S - ADAGA", "", 0, 0, "", "", true}, // Invalid coordinates
-		{"Invalid", "", 0, 0, "", "", true},
-		{"# Comment", "", 0, 0, "", "", true},
+		{"A - Lara - 1 - 1 - S - AADADAGGA", "Lara", 1, 1, models.South, "AADADAGGA", false},
+		{"A - Indiana - 0 - 0 - N - ADAGA", "Indiana", 0, 0, models.North, "ADAGA", false},
+		{"A - Test - 5 - 3 - E - A", "Test", 3, 5, models.East, "A", false},
+		{"A - Lara", "", 0, 0, models.North, "", true},                     // Missing fields
+		{"A - abc - def - 1 - S - ADAGA", "", 0, 0, models.North, "", true}, // Invalid coordinates
+		{"Invalid", "", 0, 0, models.North, "", true},
+		{"# Comment", "", 0, 0, models.North, "", true},
 	}
 
 	for _, test := range tests {
@@ -205,13 +206,13 @@ func TestParseAdventurer(t *testing.T) {
 				t.Errorf("Expected col %d, got %d for input %q", test.expectedCol, adventurer.Col, test.input)
 			}
 			if adventurer.Direction != test.expectedDirection {
-				t.Errorf("Expected direction %q, got %q for input %q", test.expectedDirection, adventurer.Direction, test.input)
+				t.Errorf("Expected direction %v, got %v for input %q", test.expectedDirection, adventurer.Direction, test.input)
 			}
 			if adventurer.Actions != test.expectedActions {
 				t.Errorf("Expected actions %q, got %q for input %q", test.expectedActions, adventurer.Actions, test.input)
 			}
-			if len(adventurer.Treasures) != 0 {
-				t.Errorf("Expected empty treasures array, got %v for input %q", adventurer.Treasures, test.input)
+			if adventurer.TreasureCount != 0 {
+				t.Errorf("Expected treasure count 0, got %d for input %q", adventurer.TreasureCount, test.input)
 			}
 		}
 	}
@@ -266,8 +267,8 @@ A - Lara - 1 - 1 - S - AADADAGGA`
 		t.Errorf("Expected adventurer name 'Lara', got '%s'", adventurer.Name)
 	}
 
-	if adventurer.Direction != "S" {
-		t.Errorf("Expected adventurer direction 'S', got '%s'", adventurer.Direction)
+	if adventurer.Direction != models.South {
+		t.Errorf("Expected adventurer direction South, got %v", adventurer.Direction)
 	}
 
 	if adventurer.Actions != "AADADAGGA" {

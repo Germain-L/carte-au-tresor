@@ -8,40 +8,38 @@ import (
 
 func TestTurnLeft(t *testing.T) {
 	tests := []struct {
-		input    string
-		expected string
+		input    models.Direction
+		expected models.Direction
 	}{
-		{"N", "O"},
-		{"S", "E"},
-		{"E", "N"},
-		{"O", "S"},
-		{"X", "X"}, // Invalid direction should remain unchanged
+		{models.North, models.West},
+		{models.South, models.East},
+		{models.East, models.North},
+		{models.West, models.South},
 	}
 
 	for _, test := range tests {
 		result := game.TurnLeft(test.input)
 		if result != test.expected {
-			t.Errorf("TurnLeft(%s): expected %s, got %s", test.input, test.expected, result)
+			t.Errorf("TurnLeft(%v): expected %v, got %v", test.input, test.expected, result)
 		}
 	}
 }
 
 func TestTurnRight(t *testing.T) {
 	tests := []struct {
-		input    string
-		expected string
+		input    models.Direction
+		expected models.Direction
 	}{
-		{"N", "E"},
-		{"S", "O"},
-		{"E", "S"},
-		{"O", "N"},
-		{"X", "X"}, // Invalid direction should remain unchanged
+		{models.North, models.East},
+		{models.South, models.West},
+		{models.East, models.South},
+		{models.West, models.North},
 	}
 
 	for _, test := range tests {
 		result := game.TurnRight(test.input)
 		if result != test.expected {
-			t.Errorf("TurnRight(%s): expected %s, got %s", test.input, test.expected, result)
+			t.Errorf("TurnRight(%v): expected %v, got %v", test.input, test.expected, result)
 		}
 	}
 }
@@ -90,12 +88,12 @@ func TestProcessAction(t *testing.T) {
 		Height: 3,
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Test",
-				Row:       1,
-				Col:       1,
-				Direction: "N",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Test",
+				Row:           1,
+				Col:           1,
+				Direction:     models.North,
+				Actions:       "",
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -105,14 +103,14 @@ func TestProcessAction(t *testing.T) {
 
 	// Test turn left
 	engine.ProcessAction(adventurer, 'G')
-	if adventurer.Direction != "O" {
-		t.Errorf("Expected direction O after turning left from N, got %s", adventurer.Direction)
+	if adventurer.Direction != models.West {
+		t.Errorf("Expected direction West after turning left from North, got %v", adventurer.Direction)
 	}
 
 	// Test turn right
 	engine.ProcessAction(adventurer, 'D')
-	if adventurer.Direction != "N" {
-		t.Errorf("Expected direction N after turning right from O, got %s", adventurer.Direction)
+	if adventurer.Direction != models.North {
+		t.Errorf("Expected direction North after turning right from West, got %v", adventurer.Direction)
 	}
 
 	// Test move (should move north from position 1,1 to 0,1)
@@ -131,12 +129,12 @@ func TestMoveAdventurer_TreasureCollection(t *testing.T) {
 		Treasures: []models.Treasure{treasure},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       0,
-				Col:       1,
-				Direction: "S",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Lara",
+				Row:           0,
+				Col:           1,
+				Direction:     models.South,
+				Actions:       "",
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -152,8 +150,8 @@ func TestMoveAdventurer_TreasureCollection(t *testing.T) {
 		t.Errorf("Expected adventurer at (1,1), got (%d,%d)", adventurer.Row, adventurer.Col)
 	}
 
-	if len(adventurer.Treasures) != 1 {
-		t.Errorf("Expected adventurer to have 1 treasure, got %d", len(adventurer.Treasures))
+	if adventurer.TreasureCount != 1 {
+		t.Errorf("Expected adventurer to have 1 treasure, got %d", adventurer.TreasureCount)
 	}
 
 	// Check that treasure count decreased on the map
@@ -173,12 +171,12 @@ func TestMoveAdventurer_TreasureExhaustion(t *testing.T) {
 		Treasures: []models.Treasure{treasure},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       0,
-				Col:       1,
-				Direction: "S",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Lara",
+				Row:           0,
+				Col:           1,
+				Direction:     models.South,
+				Actions:       "",
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -196,8 +194,8 @@ func TestMoveAdventurer_TreasureExhaustion(t *testing.T) {
 		t.Errorf("Expected no treasure remaining on the map, got %v", cell.Treasure)
 	}
 
-	if len(adventurer.Treasures) != 1 {
-		t.Errorf("Expected adventurer to have 1 treasure, got %d", len(adventurer.Treasures))
+	if adventurer.TreasureCount != 1 {
+		t.Errorf("Expected adventurer to have 1 treasure, got %d", adventurer.TreasureCount)
 	}
 }
 
@@ -211,12 +209,12 @@ func TestMoveAdventurer_BlockedByMountain(t *testing.T) {
 		},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       1,
-				Col:       1,
-				Direction: "N",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Lara",
+				Row:           1,
+				Col:           1,
+				Direction:     models.North,
+				Actions:       "",
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -240,20 +238,20 @@ func TestMoveAdventurer_BlockedByAnotherAdventurer(t *testing.T) {
 		Height: 3,
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       1,
-				Col:       1,
-				Direction: "N",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Lara",
+				Row:           1,
+				Col:           1,
+				Direction:     models.North,
+				Actions:       "",
+				TreasureCount: 0,
 			},
 			{
-				Name:      "Indiana",
-				Row:       0,
-				Col:       1,
-				Direction: "S",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Indiana",
+				Row:           0,
+				Col:           1,
+				Direction:     models.South,
+				Actions:       "",
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -277,12 +275,12 @@ func TestMoveAdventurer_OutOfBounds(t *testing.T) {
 		Height: 2,
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       0,
-				Col:       0,
-				Direction: "N",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Lara",
+				Row:           0,
+				Col:           0,
+				Direction:     models.North,
+				Actions:       "",
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -309,12 +307,12 @@ func TestRunSimulation(t *testing.T) {
 		},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       0,
-				Col:       0,
-				Direction: "E",
-				Actions:   "ADA", // Move east, turn right, move south to treasure
-				Treasures: []models.Treasure{},
+				Name:          "Lara",
+				Row:           0,
+				Col:           0,
+				Direction:     models.East,
+				Actions:       "ADA", // Move east, turn right, move south to treasure
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -330,8 +328,8 @@ func TestRunSimulation(t *testing.T) {
 		t.Errorf("Expected adventurer at (1,1), got (%d,%d)", adventurer.Row, adventurer.Col)
 	}
 
-	if len(adventurer.Treasures) != 1 {
-		t.Errorf("Expected adventurer to have 1 treasure, got %d", len(adventurer.Treasures))
+	if adventurer.TreasureCount != 1 {
+		t.Errorf("Expected adventurer to have 1 treasure, got %d", adventurer.TreasureCount)
 	}
 
 	if len(adventurer.Actions) != 0 {

@@ -10,11 +10,11 @@ type Treasure struct {
 }
 
 type Adventurer struct {
-	Name      string
-	Row, Col  int
-	Direction string
-	Actions   string
-	Treasures []Treasure
+	Name        string
+	Row, Col    int
+	Direction   Direction
+	Actions     string
+	TreasureCount int  // Optimized: use counter instead of slice
 }
 
 type MapCell struct {
