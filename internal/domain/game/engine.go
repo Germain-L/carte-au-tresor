@@ -142,11 +142,11 @@ func (e *Engine) MoveAdventurer(adventurer *models.Adventurer) {
 
 func (e *Engine) ProcessAction(adventurer *models.Adventurer, action rune) {
 	switch action {
-	case 'G':
+	case models.ActionTurnLeft:
 		adventurer.Direction = TurnLeft(adventurer.Direction)
-	case 'D':
+	case models.ActionTurnRight:
 		adventurer.Direction = TurnRight(adventurer.Direction)
-	case 'A':
+	case models.ActionAdvance:
 		e.MoveAdventurer(adventurer)
 	default:
 		// Do nothing for letters we don't recognize
@@ -158,16 +158,17 @@ func (e *Engine) Run() {
 		// Default to true to not loop again if no actions are left
 		allActionsCompleted := true
 
-		// Process each adventuer in order
+		// Process each adventurer in order
 		for i := range e.mapData.Adventurers {
-			if len(e.mapData.Adventurers[i].Actions) > 0 {
+			adventurer := &e.mapData.Adventurers[i]
+			if adventurer.ActionIndex < len(adventurer.Actions) {
 				allActionsCompleted = false
 
-				// Convert to rune (Go's type for single characters)
-				nextAction := rune(e.mapData.Adventurers[i].Actions[0])
-				e.mapData.Adventurers[i].Actions = e.mapData.Adventurers[i].Actions[1:]
+				// Get next action by index (no string slicing allocation)
+				nextAction := rune(adventurer.Actions[adventurer.ActionIndex])
+				adventurer.ActionIndex++
 
-				e.ProcessAction(&e.mapData.Adventurers[i], nextAction)
+				e.ProcessAction(adventurer, nextAction)
 			}
 		}
 

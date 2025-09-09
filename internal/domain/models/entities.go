@@ -14,6 +14,7 @@ type Adventurer struct {
 	Row, Col    int
 	Direction   Direction
 	Actions     string
+	ActionIndex int  // Optimized: track current action index instead of slicing
 	TreasureCount int  // Optimized: use counter instead of slice
 }
 

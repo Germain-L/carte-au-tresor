@@ -104,7 +104,8 @@ func (p *Parser) ParseAdventurer(line string) (models.Adventurer, error) {
 		Col:           col,
 		Direction:     direction,
 		Actions:       actions,
-		TreasureCount: 0,
+		ActionIndex:   models.DefaultActionIndex,
+		TreasureCount: models.DefaultTreasureCount,
 	}, nil
 }
 

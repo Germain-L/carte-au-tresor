@@ -93,6 +93,7 @@ func TestProcessAction(t *testing.T) {
 				Col:           1,
 				Direction:     models.North,
 				Actions:       "",
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 		},
@@ -134,6 +135,7 @@ func TestMoveAdventurer_TreasureCollection(t *testing.T) {
 				Col:           1,
 				Direction:     models.South,
 				Actions:       "",
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 		},
@@ -176,6 +178,7 @@ func TestMoveAdventurer_TreasureExhaustion(t *testing.T) {
 				Col:           1,
 				Direction:     models.South,
 				Actions:       "",
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 		},
@@ -214,6 +217,7 @@ func TestMoveAdventurer_BlockedByMountain(t *testing.T) {
 				Col:           1,
 				Direction:     models.North,
 				Actions:       "",
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 		},
@@ -243,6 +247,7 @@ func TestMoveAdventurer_BlockedByAnotherAdventurer(t *testing.T) {
 				Col:           1,
 				Direction:     models.North,
 				Actions:       "",
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 			{
@@ -251,6 +256,7 @@ func TestMoveAdventurer_BlockedByAnotherAdventurer(t *testing.T) {
 				Col:           1,
 				Direction:     models.South,
 				Actions:       "",
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 		},
@@ -280,6 +286,7 @@ func TestMoveAdventurer_OutOfBounds(t *testing.T) {
 				Col:           0,
 				Direction:     models.North,
 				Actions:       "",
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 		},
@@ -312,6 +319,7 @@ func TestRunSimulation(t *testing.T) {
 				Col:           0,
 				Direction:     models.East,
 				Actions:       "ADA", // Move east, turn right, move south to treasure
+				ActionIndex: 0,
 				TreasureCount: 0,
 			},
 		},
@@ -332,8 +340,8 @@ func TestRunSimulation(t *testing.T) {
 		t.Errorf("Expected adventurer to have 1 treasure, got %d", adventurer.TreasureCount)
 	}
 
-	if len(adventurer.Actions) != 0 {
-		t.Errorf("Expected all actions to be consumed, got %q", adventurer.Actions)
+	if adventurer.ActionIndex != len(adventurer.Actions) {
+		t.Errorf("Expected all actions to be consumed, got ActionIndex %d for Actions %q", adventurer.ActionIndex, adventurer.Actions)
 	}
 }
 

@@ -214,6 +214,9 @@ func TestParseAdventurer(t *testing.T) {
 			if adventurer.TreasureCount != 0 {
 				t.Errorf("Expected treasure count 0, got %d for input %q", adventurer.TreasureCount, test.input)
 			}
+			if adventurer.ActionIndex != 0 {
+				t.Errorf("Expected action index 0, got %d for input %q", adventurer.ActionIndex, test.input)
+			}
 		}
 	}
 }
