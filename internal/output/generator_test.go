@@ -22,16 +22,13 @@ func TestGenerateOutputLines(t *testing.T) {
 		},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       3,
-				Col:       0,
-				Direction: "S",
-				Actions:   "",
-				Treasures: []models.Treasure{
-					{Row: 3, Col: 1, Count: 1},
-					{Row: 3, Col: 0, Count: 1},
-					{Row: 3, Col: 0, Count: 1},
-				},
+				Name:          "Lara",
+				Row:           3,
+				Col:           0,
+				Direction:     models.South,
+				Actions:       "",
+				ActionIndex:   0,
+				TreasureCount: 3,
 			},
 		},
 	}
@@ -89,12 +86,13 @@ func TestGenerateOutputLines_NoTreasuresLeft(t *testing.T) {
 		Treasures: []models.Treasure{},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       1,
-				Col:       1,
-				Direction: "N",
-				Actions:   "",
-				Treasures: []models.Treasure{{Row: 3, Col: 1, Count: 1}},
+				Name:          "Lara",
+				Row:           1,
+				Col:           1,
+				Direction:     models.North,
+				Actions:       "",
+				ActionIndex: 0,
+				TreasureCount: 1,
 			},
 		},
 	}
@@ -173,20 +171,22 @@ func TestGenerateOutputLines_MultipleAdventurers(t *testing.T) {
 		Treasures: []models.Treasure{},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Lara",
-				Row:       0,
-				Col:       0,
-				Direction: "E",
-				Actions:   "",
-				Treasures: []models.Treasure{{Row: 1, Col: 1, Count: 1}},
+				Name:          "Lara",
+				Row:           0,
+				Col:           0,
+				Direction:     models.East,
+				Actions:       "",
+				ActionIndex: 0,
+				TreasureCount: 1,
 			},
 			{
-				Name:      "Indiana",
-				Row:       2,
-				Col:       2,
-				Direction: "W",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Indiana",
+				Row:           2,
+				Col:           2,
+				Direction:     models.West,
+				Actions:       "",
+				ActionIndex: 0,
+				TreasureCount: 0,
 			},
 		},
 	}
@@ -207,7 +207,7 @@ func TestGenerateOutputLines_MultipleAdventurers(t *testing.T) {
 	expected := []string{
 		"C - 3 - 3",
 		"A - Lara - 0 - 0 - E - 1",
-		"A - Indiana - 2 - 2 - W - 0",
+		"A - Indiana - 2 - 2 - O - 0",
 	}
 
 	if len(lines) != len(expected) {
@@ -239,12 +239,13 @@ func TestWriteGameOutput(t *testing.T) {
 		Treasures: []models.Treasure{},
 		Adventurers: []models.Adventurer{
 			{
-				Name:      "Test",
-				Row:       1,
-				Col:       0,
-				Direction: "N",
-				Actions:   "",
-				Treasures: []models.Treasure{},
+				Name:          "Test",
+				Row:           1,
+				Col:           0,
+				Direction:     models.North,
+				Actions:       "",
+				ActionIndex: 0,
+				TreasureCount: 0,
 			},
 		},
 	}

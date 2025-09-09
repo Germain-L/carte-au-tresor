@@ -35,9 +35,8 @@ func (g *Generator) GenerateOutputLines(gameMapData *models.MapData, gameMap *[]
 
 	// Add adventurers with their final positions and treasure count
 	for _, adventurer := range gameMapData.Adventurers {
-		treasureCount := len(adventurer.Treasures)
 		lines = append(lines, fmt.Sprintf("A - %s - %d - %d - %s - %d",
-			adventurer.Name, adventurer.Col, adventurer.Row, adventurer.Direction, treasureCount))
+			adventurer.Name, adventurer.Col, adventurer.Row, adventurer.Direction.String(), adventurer.TreasureCount))
 	}
 
 	return lines

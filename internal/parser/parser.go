@@ -89,16 +89,23 @@ func (p *Parser) ParseAdventurer(line string) (models.Adventurer, error) {
 	}
 
 	name := strings.TrimSpace(m[1])
-	direction := strings.TrimSpace(m[2])
+	directionStr := strings.TrimSpace(m[2])
 	actions := strings.TrimSpace(m[3])
 
+	// Convert string direction to Direction constant
+	direction, exists := models.StringToDirection[directionStr]
+	if !exists {
+		return models.Adventurer{}, fmt.Errorf("invalid direction %q", directionStr)
+	}
+
 	return models.Adventurer{
-		Name:      name,
-		Row:       row,
-		Col:       col,
-		Direction: direction,
-		Actions:   actions,
-		Treasures: []models.Treasure{},
+		Name:          name,
+		Row:           row,
+		Col:           col,
+		Direction:     direction,
+		Actions:       actions,
+		ActionIndex:   models.DefaultActionIndex,
+		TreasureCount: models.DefaultTreasureCount,
 	}, nil
 }
 

@@ -60,31 +60,31 @@ func (e *Engine) CanMove(nextRow, nextCol int) bool {
 	return cell.Mountain == nil && cell.Adventurer == nil
 }
 
-func TurnLeft(direction string) string {
+func TurnLeft(direction models.Direction) models.Direction {
 	switch direction {
-	case "N":
-		return "O"
-	case "S":
-		return "E"
-	case "E":
-		return "N"
-	case "O":
-		return "S"
+	case models.North:
+		return models.West
+	case models.South:
+		return models.East
+	case models.East:
+		return models.North
+	case models.West:
+		return models.South
 	default:
 		return direction
 	}
 }
 
-func TurnRight(direction string) string {
+func TurnRight(direction models.Direction) models.Direction {
 	switch direction {
-	case "N":
-		return "E"
-	case "S":
-		return "O"
-	case "E":
-		return "S"
-	case "O":
-		return "N"
+	case models.North:
+		return models.East
+	case models.South:
+		return models.West
+	case models.East:
+		return models.South
+	case models.West:
+		return models.North
 	default:
 		return direction
 	}
@@ -94,16 +94,16 @@ func (e *Engine) MoveAdventurer(adventurer *models.Adventurer) {
 	var nextRow, nextCol int
 
 	switch adventurer.Direction {
-	case "E":
+	case models.East:
 		nextRow = adventurer.Row
 		nextCol = adventurer.Col + 1
-	case "O":
+	case models.West:
 		nextRow = adventurer.Row
 		nextCol = adventurer.Col - 1
-	case "S":
+	case models.South:
 		nextRow = adventurer.Row + 1
 		nextCol = adventurer.Col
-	case "N":
+	case models.North:
 		nextRow = adventurer.Row - 1
 		nextCol = adventurer.Col
 	default:
@@ -123,7 +123,7 @@ func (e *Engine) MoveAdventurer(adventurer *models.Adventurer) {
 		if cell.Treasure != nil && cell.Treasure.Count > 0 {
 			// Collect one treasure
 			cell.Treasure.Count--
-			adventurer.Treasures = append(adventurer.Treasures, models.Treasure{Row: nextRow, Col: nextCol, Count: 1})
+			adventurer.TreasureCount++  // Optimized: simple counter instead of slice
 			fmt.Printf("Adventurer %s collected a treasure at (%d, %d). Remaining treasures: %d\n",
 				adventurer.Name, nextRow, nextCol, cell.Treasure.Count)
 
@@ -142,11 +142,11 @@ func (e *Engine) MoveAdventurer(adventurer *models.Adventurer) {
 
 func (e *Engine) ProcessAction(adventurer *models.Adventurer, action rune) {
 	switch action {
-	case 'G':
+	case models.ActionTurnLeft:
 		adventurer.Direction = TurnLeft(adventurer.Direction)
-	case 'D':
+	case models.ActionTurnRight:
 		adventurer.Direction = TurnRight(adventurer.Direction)
-	case 'A':
+	case models.ActionAdvance:
 		e.MoveAdventurer(adventurer)
 	default:
 		// Do nothing for letters we don't recognize
@@ -158,16 +158,17 @@ func (e *Engine) Run() {
 		// Default to true to not loop again if no actions are left
 		allActionsCompleted := true
 
-		// Process each adventuer in order
+		// Process each adventurer in order
 		for i := range e.mapData.Adventurers {
-			if len(e.mapData.Adventurers[i].Actions) > 0 {
+			adventurer := &e.mapData.Adventurers[i]
+			if adventurer.ActionIndex < len(adventurer.Actions) {
 				allActionsCompleted = false
 
-				// Convert to rune (Go's type for single characters)
-				nextAction := rune(e.mapData.Adventurers[i].Actions[0])
-				e.mapData.Adventurers[i].Actions = e.mapData.Adventurers[i].Actions[1:]
+				// Get next action by index (no string slicing allocation)
+				nextAction := rune(adventurer.Actions[adventurer.ActionIndex])
+				adventurer.ActionIndex++
 
-				e.ProcessAction(&e.mapData.Adventurers[i], nextAction)
+				e.ProcessAction(adventurer, nextAction)
 			}
 		}
 
